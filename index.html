@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Ferronnerie Maes — Gestion</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
+
+:root{
+  --bg:#EDEAE2;
+  --panel:#FBFAF7;
+  --ink:#1C1B18;
+  --ink-soft:#6B6A62;
+  --line:#D6D2C6;
+  --steel:#3F454B;
+  --steel-dark:#24282C;
+  --ember:#C1451B;
+  --ember-dark:#93340F;
+  --ok:#2E6B41;
+  --ok-bg:#E4EEE3;
+  --warn:#9A6B0A;
+  --warn-bg:#F3E9D2;
+  --danger:#B23324;
+  --danger-bg:#F5E1DC;
+  --font-d:'Oswald',sans-serif;
+  --font-b:'Inter',sans-serif;
+  --font-m:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-b);font-size:14px;line-height:1.5;}
+#app{max-width:1000px;margin:0 auto;padding:0 0 60px;}
+
+header.top{background:var(--steel-dark);color:#EFEDE7;padding:22px 24px 20px;border-bottom:4px solid var(--ember);}
+header.top .eyebrow{font-family:var(--font-m);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#B7C2C9;margin:0 0 4px;}
+header.top h1{font-family:var(--font-d);font-weight:700;font-size:26px;letter-spacing:.01em;margin:0;text-transform:uppercase;}
+header.top p{margin:6px 0 0;color:#C7C3B8;font-size:13px;}
+
+nav.tabs{display:flex;background:var(--steel);border-bottom:1px solid var(--line);flex-wrap:wrap;}
+nav.tabs button{flex:1;min-width:130px;background:transparent;border:none;color:#D8D5CA;font-family:var(--font-d);font-size:13.5px;letter-spacing:.04em;text-transform:uppercase;padding:13px 6px;cursor:pointer;border-bottom:3px solid transparent;}
+nav.tabs button:hover{background:rgba(255,255,255,.06);}
+nav.tabs button.active{color:#fff;border-bottom-color:var(--ember);background:rgba(255,255,255,.04);}
+
+main{padding:20px 20px 0;}
+section.tab{display:none;}
+section.tab.active{display:block;}
+
+.panel{background:var(--panel);border:1px solid var(--line);padding:18px 20px;margin-bottom:16px;}
+.panel h2{font-family:var(--font-d);font-size:16px;text-transform:uppercase;letter-spacing:.03em;margin:0 0 4px;color:var(--steel-dark);}
+.panel .sub{color:var(--ink-soft);font-size:12.5px;margin:0 0 16px;}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px 16px;}
+.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px 16px;}
+@media(max-width:640px){.grid2,.grid3,.grid4{grid-template-columns:1fr;}}
+
+label{display:block;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);margin-bottom:4px;}
+input[type=text],input[type=number],input[type=date],select{width:100%;padding:8px 9px;border:1px solid var(--line);background:#fff;font-family:var(--font-b);font-size:14px;color:var(--ink);}
+input:focus,select:focus{outline:2px solid var(--ember);outline-offset:-1px;}
+.field{margin-bottom:12px;}
+.field .hint{font-size:11px;color:var(--ink-soft);margin-top:3px;}
+
+button.btn{font-family:var(--font-d);text-transform:uppercase;letter-spacing:.04em;font-size:13px;padding:10px 18px;border:none;cursor:pointer;background:var(--ember);color:#fff;}
+button.btn:hover{background:var(--ember-dark);}
+button.btn.secondary{background:transparent;color:var(--steel-dark);border:1px solid var(--steel);}
+button.btn.secondary:hover{background:var(--line);}
+button.btn.ghost{background:transparent;color:var(--ink-soft);border:1px dashed var(--line);font-family:var(--font-b);text-transform:none;letter-spacing:0;font-weight:600;}
+
+.rate-line{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.rate-line input{width:120px;font-family:var(--font-m);font-size:20px;font-weight:700;text-align:right;}
+.rate-line .unit{font-family:var(--font-d);text-transform:uppercase;font-size:13px;color:var(--ink-soft);}
+.rate-banner{font-size:12px;color:var(--ink-soft);margin-top:10px;}
+
+details.advanced{margin-top:14px;border-top:1px solid var(--line);padding-top:12px;}
+details.advanced summary{cursor:pointer;font-size:12.5px;color:var(--ink-soft);text-decoration:underline;}
+details.advanced .content{margin-top:12px;}
+
+table.lines{width:100%;border-collapse:collapse;margin-bottom:8px;}
+table.lines th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);padding:0 6px 6px 0;font-weight:600;}
+table.lines td{padding:3px 6px 3px 0;vertical-align:top;}
+table.lines input{padding:6px 7px;font-size:13px;}
+table.lines td.rm{text-align:center;width:30px;}
+table.lines td.rm button{background:none;border:none;color:var(--danger);font-size:16px;cursor:pointer;line-height:1;padding:6px;}
+.col-desig{width:34%;}
+.col-num{width:13%;}
+
+.result-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;}
+@media(max-width:760px){.result-grid{grid-template-columns:1fr;}}
+.breakdown{font-family:var(--font-m);font-size:13px;}
+.breakdown .row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);}
+.breakdown .row.sub{color:var(--ink-soft);font-size:12px;}
+.breakdown .row.total{border-top:2px solid var(--steel-dark);border-bottom:none;margin-top:4px;padding-top:10px;font-weight:700;font-size:15px;}
+.breakdown .row.ttc{font-size:19px;font-weight:700;color:var(--ember-dark);padding-top:10px;}
+
+.gauge-wrap{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;}
+.gauge-caption{font-family:var(--font-d);text-transform:uppercase;font-size:12px;letter-spacing:.04em;color:var(--ink-soft);margin-top:6px;text-align:center;}
+.gauge-value{font-family:var(--font-m);font-size:24px;font-weight:700;margin-top:2px;}
+
+.status-box{padding:12px 16px;font-size:14px;margin-top:14px;border-left:4px solid var(--danger);background:var(--danger-bg);color:var(--danger);font-weight:600;}
+.status-box.ok{border-left-color:var(--ok);background:var(--ok-bg);color:var(--ok);}
+.status-box.warn{border-left-color:var(--warn);background:var(--warn-bg);color:var(--warn);}
+
+.ecart-box{margin-top:10px;padding:10px 14px;background:#F1EEE6;border:1px solid var(--line);font-size:13px;}
+.ecart-box b{font-family:var(--font-m);}
+
+table.hist{width:100%;border-collapse:collapse;}
+table.hist th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);padding:8px 8px;border-bottom:2px solid var(--steel-dark);}
+table.hist td{padding:9px 8px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:middle;}
+table.hist tr:hover td{background:#F5F3EC;}
+table.hist tr.deficit td{background:var(--danger-bg);}
+.montant{font-family:var(--font-m);font-weight:700;}
+.montant.neg{color:var(--danger);}
+.montant.pos{color:var(--ok);}
+select.statut{font-family:var(--font-b);font-size:12px;padding:4px 6px;border:1px solid var(--line);}
+.badge-origin{font-size:10px;text-transform:uppercase;letter-spacing:.03em;padding:1px 6px;background:var(--line);color:var(--ink-soft);}
+.actions-cell{white-space:nowrap;}
+.actions-cell button{background:none;border:none;cursor:pointer;color:var(--ink-soft);font-size:13px;margin-right:6px;font-family:var(--font-b);text-decoration:underline;}
+.actions-cell button.del{color:var(--danger);}
+
+.empty-state{text-align:center;padding:40px 20px;color:var(--ink-soft);}
+.empty-state .big{font-family:var(--font-d);text-transform:uppercase;font-size:15px;color:var(--steel-dark);margin-bottom:6px;}
+
+.kpi-row{display:flex;gap:14px;margin-bottom:16px;flex-wrap:wrap;}
+.kpi{background:var(--panel);border:1px solid var(--line);padding:12px 16px;flex:1;min-width:150px;}
+.kpi .k-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);}
+.kpi .k-value{font-family:var(--font-m);font-size:20px;font-weight:700;margin-top:3px;}
+.kpi .k-value.neg{color:var(--danger);}
+.kpi .k-value.pos{color:var(--ok);}
+
+.editing-banner{background:var(--warn-bg);color:var(--warn);padding:8px 14px;font-size:12.5px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;}
+.editing-banner button{background:none;border:none;text-decoration:underline;cursor:pointer;color:var(--warn);font-family:var(--font-b);font-size:12.5px;}
+
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--steel-dark);color:#fff;padding:10px 20px;font-size:13px;font-family:var(--font-b);opacity:0;pointer-events:none;transition:opacity .25s;z-index:99;}
+.toast.show{opacity:1;}
+
+footer.note{text-align:center;color:var(--ink-soft);font-size:11px;padding:18px 20px 0;}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top">
+    <p class="eyebrow">Outil interne</p>
+    <h1>Ferronnerie Maes</h1>
+    <p>Devis au prix juste, suivi des chantiers réels, vue d'ensemble</p>
+  </header>
+
+  <nav class="tabs">
+    <button data-tab="rate" class="active">1 · Taux horaire</button>
+    <button data-tab="devis">2 · Faire un devis</button>
+    <button data-tab="chantier">3 · Suivi chantier</button>
+    <button data-tab="history">4 · Vue d'ensemble</button>
+  </nav>
+
+  <main>
+
+    <!-- TAB 1 : TAUX HORAIRE -->
+    <section class="tab active" id="tab-rate">
+      <div class="panel">
+        <h2>Taux horaire de référence</h2>
+        <p class="sub">Sert au calcul des devis (onglet 2) et du suivi chantier (onglet 3). Repère marché pour un ferronnier qualifié en Belgique : autour de 70€/h. Modifiable à tout moment.</p>
+        <div class="rate-line">
+          <input type="number" id="r-taux" min="0" step="1" value="70">
+          <span class="unit">€ / heure, hors matériaux</span>
+          <button class="btn" id="btn-save-rate">Enregistrer</button>
+        </div>
+        <p class="rate-banner">Taux actuellement utilisé dans les calculs : <b id="rate-active-display">70,00 €/h</b></p>
+
+        <details class="advanced" open>
+          <summary>Affiner ce taux à partir de ses vraies charges — cotisations INASTI et IPP réels, barèmes belges 2026</summary>
+          <div class="content">
+            <p class="sub">Indépendant à titre principal. Ce calcul résout combien il doit réellement facturer pour que net visé + frais fixes + cotisations sociales + impôt tombent juste — pas une approximation à un pourcentage forfaitaire.</p>
+            <div class="grid3">
+              <div class="field"><label>Net visé en poche / mois</label><input type="number" id="r-net-vise" min="0" step="10" value="2010"></div>
+              <div class="field"><label>Frais fixes / mois (atelier, assurances, véhicule, outillage, comptable...)</label><input type="number" id="r-frais-fixes" min="0" step="10" value="1500"></div>
+              <div class="field"><label>Heures facturables réelles / mois</label><input type="number" id="r-heures" min="1" step="1" value="110"></div>
+              <div class="field"><label>Marge de sécurité (%) — coussin volontaire</label><input type="number" id="r-marge-secu" min="0" step="0.5" value="6.5"></div>
+              <div class="field"><label>Taxe communale additionnelle (%) — selon sa commune</label><input type="number" id="r-communal" min="0" step="0.5" value="7"></div>
+            </div>
+            <button class="btn secondary" id="btn-calc-rate">Calculer le taux mini réel (INASTI + IPP)</button>
+            <div class="breakdown" id="rate-calc-breakdown" style="margin-top:14px;"></div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- TAB 2 : DEVIS -->
+    <section class="tab" id="tab-devis">
+
+      <div class="status-box warn" style="margin-bottom:16px;">Exemple pré-rempli pour démonstration — un portail sur mesure. Modifie ou vide les champs (bouton en bas) avant un vrai devis.</div>
+
+      <div class="panel">
+        <h2>Projet</h2>
+        <div class="grid2">
+          <div class="field"><label>Client</label><input type="text" id="d-client" placeholder="Nom du client" value="Denis Casterman"></div>
+          <div class="field"><label>Projet</label><input type="text" id="d-projet" placeholder="Ex: Escalier suspendu" value="Portail battant sur mesure 3m x 1,8m"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Matériaux</h2>
+        <p class="sub">Une ligne par matériau. La % chute couvre les découpes perdues, ratés, ajustements.</p>
+        <table class="lines" id="table-materiaux">
+          <thead><tr><th class="col-desig">Désignation</th><th class="col-num">Qté</th><th class="col-num">Unité</th><th class="col-num">Prix / unité €</th><th class="col-num">% Chute</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <button class="btn ghost" id="btn-add-materiau">+ Ajouter un matériau</button>
+      </div>
+
+      <div class="panel">
+        <h2>Finitions &amp; sous-traitance</h2>
+        <p class="sub">Thermolaquage, galvanisation, verre, découpe externe...</p>
+        <table class="lines" id="table-finitions">
+          <thead><tr><th class="col-desig">Désignation</th><th class="col-num">Prix €</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <button class="btn ghost" id="btn-add-finition">+ Ajouter une finition</button>
+      </div>
+
+      <div class="panel">
+        <h2>Main d'œuvre &amp; déplacement</h2>
+        <div class="grid4">
+          <div class="field"><label>Heures atelier</label><input type="number" id="d-heures-atelier" min="0" step="0.5" value="14"></div>
+          <div class="field"><label>Heures pose / chantier</label><input type="number" id="d-heures-pose" min="0" step="0.5" value="4"></div>
+          <div class="field"><label>Km déplacement (A/R total)</label><input type="number" id="d-km" min="0" step="1" value="20"></div>
+          <div class="field"><label>Prix au km (€)</label><input type="number" id="d-prix-km" min="0" step="0.05" value="0.45"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Frais généraux, marge &amp; TVA</h2>
+        <div class="grid4">
+          <div class="field"><label>Frais généraux (%)</label><input type="number" id="d-frais-generaux" min="0" step="1" value="8"></div>
+          <div class="field"><label>Marge bénéficiaire (%)</label><input type="number" id="d-marge" min="0" step="1" value="20"></div>
+          <div class="field">
+            <label>TVA</label>
+            <select id="d-tva"><option value="21">21% — standard</option><option value="6">6% — rénovation +10 ans</option></select>
+          </div>
+          <div class="field"><label>Prix envisagé par Olivier (optionnel, €)</label><input type="number" id="d-prix-envisage" min="0" step="10" placeholder="Pour comparer" value="2200"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Résultat</h2>
+        <div class="result-grid">
+          <div class="breakdown" id="devis-breakdown"></div>
+          <div class="gauge-wrap">
+            <svg id="gauge" width="180" height="120" viewBox="0 0 180 120"></svg>
+            <div class="gauge-caption">Marge réelle sur prix de vente</div>
+            <div class="gauge-value" id="gauge-value">0%</div>
+          </div>
+        </div>
+        <div id="devis-warning"></div>
+        <div id="devis-ecart"></div>
+        <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn" id="btn-save-devis">Enregistrer ce devis dans le suivi</button>
+          <button class="btn secondary" id="btn-clear-devis">Vider le formulaire</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3 : SUIVI CHANTIER (réel / manuel) -->
+    <section class="tab" id="tab-chantier">
+
+      <div id="chantier-editing-banner"></div>
+
+      <div class="status-box" style="margin-bottom:16px;">Exemple pré-rempli pour démonstration — une main courante facturée trop bas. Vide le formulaire avant un vrai suivi.</div>
+
+      <div class="panel">
+        <h2>Chantier</h2>
+        <p class="sub">Pour enregistrer rapidement un chantier tel qu'Olivier te le raconte, ou pour mettre à jour les chiffres réels d'un devis déjà envoyé (ouvre-le depuis l'onglet 4 avec "Éditer").</p>
+        <div class="grid2">
+          <div class="field"><label>Client</label><input type="text" id="c-client" placeholder="Nom du client" value="Martin"></div>
+          <div class="field"><label>Projet</label><input type="text" id="c-projet" placeholder="Ex: Portail Denis" value="Main courante escalier intérieur"></div>
+          <div class="field"><label>Date</label><input type="date" id="c-date"></div>
+          <div class="field">
+            <label>Statut</label>
+            <select id="c-statut"><option>Brouillon</option><option>Envoyé</option><option>Accepté</option><option>Refusé</option><option>Facturé</option><option selected>Payé</option></select>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Ce qui a été facturé / annoncé</h2>
+        <div class="field"><label>Prix facturé au client (€)</label><input type="number" id="c-prix" min="0" step="10" value="800"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Ce que ça a réellement coûté</h2>
+        <p class="sub">Des totaux approximatifs suffisent.</p>
+        <div class="grid2">
+          <div class="field"><label>Matériaux + sous-traitance (total €)</label><input type="number" id="c-materiaux" min="0" step="10" value="220"></div>
+          <div class="field"><label>Autres frais (déplacement, location, imprévu...)</label><input type="number" id="c-autres" min="0" step="10" value="40"></div>
+          <div class="field"><label>Heures atelier</label><input type="number" id="c-heures-atelier" min="0" step="0.5" value="6"></div>
+          <div class="field"><label>Heures pose / chantier</label><input type="number" id="c-heures-pose" min="0" step="0.5" value="2"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Résultat</h2>
+        <div class="breakdown" id="chantier-breakdown"></div>
+        <div id="chantier-status"></div>
+        <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn" id="btn-save-chantier">Enregistrer</button>
+          <button class="btn secondary" id="btn-clear-chantier">Nouveau chantier (vider)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4 : VUE D'ENSEMBLE -->
+    <section class="tab" id="tab-history">
+      <div class="kpi-row" id="kpi-row"></div>
+
+      <div class="panel">
+        <h2>Est-ce qu'il vit réellement de son activité ce mois-ci ?</h2>
+        <p class="sub">Basé sur le total des chantiers au statut <b>Payé</b> ce mois-ci — projection annualisée pour calculer cotisations INASTI et impôt réels, comparée au net visé (onglet 1).</p>
+        <div class="breakdown" id="mensuel-breakdown"></div>
+        <div id="mensuel-status"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Tous les chantiers</h2>
+        <div id="history-content"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="note">Données enregistrées sur ce compte uniquement — visibles seulement par toi.</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+
+  function fmt(n){ if(isNaN(n)) n=0; return n.toLocaleString('fr-BE',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function euro(n){ return fmt(n) + ' €'; }
+  function uid(){ return 'c' + Date.now() + Math.random().toString(36).slice(2,7); }
+  function val(id){ return parseFloat(document.getElementById(id).value) || 0; }
+  function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+  function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s||''; return d.innerHTML; }
+  function todayISO(){ return new Date().toISOString().slice(0,10); }
+
+  // ---------- Tabs ----------
+  document.querySelectorAll('nav.tabs button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('section.tab').forEach(s=>s.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+      if(btn.dataset.tab === 'history') renderHistory();
+    });
+  });
+  function goToTab(name){
+    document.querySelector(`nav.tabs button[data-tab="${name}"]`).click();
+  }
+
+  // ---------- Taux horaire ----------
+  let currentRate = 70;
+
+  // Cotisations sociales INASTI (indépendant à titre principal) + IPP — barèmes 2026
+  function cotisationAnnuelle(R){
+    const minBase=17374.08, seuil1=75024.55, seuil2=110562.42, minCot=890.42*4;
+    let cot;
+    if(R<=minBase) cot=minCot;
+    else if(R<=seuil1){ cot=R*0.205; if(cot<minCot) cot=minCot; }
+    else if(R<=seuil2) cot=seuil1*0.205+(R-seuil1)*0.1416;
+    else cot=seuil1*0.205+(seuil2-seuil1)*0.1416;
+    return cot*1.0405;
+  }
+  function ipp(taxable, communalPct){
+    const brackets=[[16320,0.25],[28800,0.40],[49840,0.45],[Infinity,0.50]];
+    let tax=0, prev=0;
+    for(const [limit,rate] of brackets){
+      if(taxable>prev){ tax += (Math.min(taxable,limit)-prev)*rate; prev=limit; } else break;
+    }
+    const reduction = 10910*0.25;
+    tax = Math.max(0, tax-reduction);
+    return tax * (1 + communalPct/100);
+  }
+  function netFromR(R, communalPct){
+    const cot = cotisationAnnuelle(R);
+    const taxable = Math.max(0, R-cot);
+    const imp = ipp(taxable, communalPct);
+    return { net: taxable-imp, cot, imp, taxable };
+  }
+  function solveR(targetNetAnnual, communalPct){
+    let lo=0, hi=500000;
+    for(let i=0;i<80;i++){
+      const mid=(lo+hi)/2;
+      const {net} = netFromR(mid, communalPct);
+      if(net < targetNetAnnual) lo=mid; else hi=mid;
+    }
+    return (lo+hi)/2;
+  }
+  // Exposé pour le panneau "vérification mensuelle" de l'onglet 4
+  window.__inastiCalc = { cotisationAnnuelle, ipp, netFromR, solveR };
+
+  async function loadRate(){
+    try{
+      const res = await window.storage.get('taux-horaire', false);
+      if(res && res.value){
+        const c = JSON.parse(res.value);
+        currentRate = c.taux ?? 70;
+        document.getElementById('r-taux').value = currentRate;
+        if(c.netVise!==undefined) document.getElementById('r-net-vise').value = c.netVise;
+        if(c.fraisFixes!==undefined) document.getElementById('r-frais-fixes').value = c.fraisFixes;
+        if(c.heures!==undefined) document.getElementById('r-heures').value = c.heures;
+        if(c.margeSecu!==undefined) document.getElementById('r-marge-secu').value = c.margeSecu;
+        if(c.communal!==undefined) document.getElementById('r-communal').value = c.communal;
+      }
+    }catch(e){ /* pas encore de config */ }
+    document.getElementById('rate-active-display').textContent = fmt(currentRate) + ' €/h';
+  }
+
+  async function saveRate(){
+    currentRate = val('r-taux');
+    const config = {
+      taux: currentRate, netVise: val('r-net-vise'), fraisFixes: val('r-frais-fixes'),
+      heures: val('r-heures'), margeSecu: val('r-marge-secu'), communal: val('r-communal')
+    };
+    try{
+      const res = await window.storage.set('taux-horaire', JSON.stringify(config), false);
+      if(res) showToast('Taux horaire enregistré : ' + fmt(currentRate) + ' €/h.');
+      else showToast('Échec de l\'enregistrement.');
+    }catch(e){ showToast('Erreur de sauvegarde.'); }
+    document.getElementById('rate-active-display').textContent = fmt(currentRate) + ' €/h';
+    computeDevis(); computeChantier();
+  }
+  document.getElementById('btn-save-rate').addEventListener('click', saveRate);
+  document.getElementById('r-taux').addEventListener('input', ()=>{
+    currentRate = val('r-taux');
+    document.getElementById('rate-active-display').textContent = fmt(currentRate) + ' €/h (non enregistré)';
+    computeDevis(); computeChantier();
+  });
+
+  document.getElementById('btn-calc-rate').addEventListener('click', ()=>{
+    const netViseMensuel = val('r-net-vise');
+    const fraisFixesMensuel = val('r-frais-fixes');
+    const heures = val('r-heures') || 1;
+    const margeSecu = val('r-marge-secu')/100;
+    const communal = val('r-communal');
+
+    const targetAnnual = netViseMensuel*12;
+    const R = solveR(targetAnnual, communal);
+    const { cot, imp, taxable, net } = netFromR(R, communal);
+    const fraisFixesAnnuel = fraisFixesMensuel*12;
+    const caAnnuel = (R + fraisFixesAnnuel) / (1-margeSecu);
+    const caMensuel = caAnnuel/12;
+    const tauxMini = caMensuel/heures;
+
+    document.getElementById('rate-calc-breakdown').innerHTML = `
+      <div class="row"><span>Revenu professionnel net annuel nécessaire (avant cotisations/impôt)</span><span>${euro(R)}</span></div>
+      <div class="row sub"><span>Cotisations INASTI annuelles (avec frais de gestion 4,05%)</span><span>${euro(cot)}</span></div>
+      <div class="row sub"><span>Impôt des personnes physiques annuel (avec communale)</span><span>${euro(imp)}</span></div>
+      <div class="row sub"><span>Net réellement en poche vérifié</span><span>${euro(net/12)} /mois</span></div>
+      <div class="row total"><span>Chiffre d'affaires HTVA nécessaire /mois</span><span>${euro(caMensuel)}</span></div>
+      <div class="row total"><span>Taux horaire minimum réel (÷ ${fmt(heures)} h)</span><span>${euro(tauxMini)} /h</span></div>
+    `;
+    document.getElementById('r-taux').value = fmt(tauxMini).replace(/\./g,'').replace(',','.');
+    document.getElementById('r-taux').value = Math.round(tauxMini*100)/100;
+    currentRate = tauxMini;
+    document.getElementById('rate-active-display').textContent = fmt(currentRate) + ' €/h (calculé — clique Enregistrer pour le fixer)';
+    computeDevis(); computeChantier();
+  });
+
+  // ---------- Devis : materiaux / finitions dynamic rows ----------
+  function addMateriauRow(data){
+    data = data || {desig:'',qte:1,unite:'kg',prix:0,chute:10};
+    const tbody = document.querySelector('#table-materiaux tbody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="col-desig"><input type="text" class="m-desig" value="${escapeHtml(data.desig)}" placeholder="Ex: Tube acier 40x40"></td>
+      <td class="col-num"><input type="number" class="m-qte" value="${data.qte}" min="0" step="0.1"></td>
+      <td class="col-num"><input type="text" class="m-unite" value="${escapeHtml(data.unite)}" placeholder="kg / m / u"></td>
+      <td class="col-num"><input type="number" class="m-prix" value="${data.prix}" min="0" step="0.1"></td>
+      <td class="col-num"><input type="number" class="m-chute" value="${data.chute}" min="0" step="1"></td>
+      <td class="rm"><button title="Supprimer">✕</button></td>`;
+    tr.querySelector('.rm button').addEventListener('click', ()=>{ tr.remove(); computeDevis(); });
+    tr.querySelectorAll('input').forEach(i=>i.addEventListener('input', computeDevis));
+    tbody.appendChild(tr);
+  }
+  function addFinitionRow(data){
+    data = data || {desig:'',prix:0};
+    const tbody = document.querySelector('#table-finitions tbody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="col-desig"><input type="text" class="f-desig" value="${escapeHtml(data.desig)}" placeholder="Ex: Thermolaquage RAL 9005"></td>
+      <td class="col-num"><input type="number" class="f-prix" value="${data.prix}" min="0" step="1"></td>
+      <td class="rm"><button title="Supprimer">✕</button></td>`;
+    tr.querySelector('.rm button').addEventListener('click', ()=>{ tr.remove(); computeDevis(); });
+    tr.querySelectorAll('input').forEach(i=>i.addEventListener('input', computeDevis));
+    tbody.appendChild(tr);
+  }
+  document.getElementById('btn-add-materiau').addEventListener('click', ()=>{ addMateriauRow(); computeDevis(); });
+  document.getElementById('btn-add-finition').addEventListener('click', ()=>{ addFinitionRow(); computeDevis(); });
+
+  // ---------- Gauge ----------
+  function drawGauge(pct){
+    const svg = document.getElementById('gauge');
+    const clamped = Math.max(0, Math.min(pct, 50));
+    const cx=90, cy=100, r=75;
+    function polar(cx,cy,r,angleDeg){ const a=angleDeg*Math.PI/180; return {x:cx+r*Math.cos(a), y:cy-r*Math.sin(a)}; }
+    function angFor(v){ return 180 - (Math.min(v,50)/50)*180; }
+    const aDangerEnd = angFor(15), aWarnEnd = angFor(20), aEnd = angFor(50);
+    function arcPath(a1,a2,rad){ const s=polar(cx,cy,rad,a1), e=polar(cx,cy,rad,a2); const large=(a1-a2)>180?1:0; return `M ${s.x} ${s.y} A ${rad} ${rad} 0 ${large} 1 ${e.x} ${e.y}`; }
+    const needleAngle = 180 - (clamped/50)*180;
+    const needleTip = polar(cx,cy,r-10,needleAngle);
+    svg.innerHTML = `
+      <path d="${arcPath(180, aDangerEnd, r)}" stroke="#B23324" stroke-width="14" fill="none"/>
+      <path d="${arcPath(aDangerEnd, aWarnEnd, r)}" stroke="#9A6B0A" stroke-width="14" fill="none"/>
+      <path d="${arcPath(aWarnEnd, aEnd, r)}" stroke="#2E6B41" stroke-width="14" fill="none"/>
+      <line x1="${cx}" y1="${cy}" x2="${needleTip.x}" y2="${needleTip.y}" stroke="#1C1B18" stroke-width="3"/>
+      <circle cx="${cx}" cy="${cy}" r="6" fill="#1C1B18"/>`;
+  }
+
+  // ---------- Devis computation ----------
+  function readMateriaux(){
+    return Array.from(document.querySelectorAll('#table-materiaux tbody tr')).map(tr=>({
+      desig: tr.querySelector('.m-desig').value, qte: parseFloat(tr.querySelector('.m-qte').value)||0,
+      unite: tr.querySelector('.m-unite').value, prix: parseFloat(tr.querySelector('.m-prix').value)||0,
+      chute: parseFloat(tr.querySelector('.m-chute').value)||0
+    }));
+  }
+  function readFinitions(){
+    return Array.from(document.querySelectorAll('#table-finitions tbody tr')).map(tr=>({
+      desig: tr.querySelector('.f-desig').value, prix: parseFloat(tr.querySelector('.f-prix').value)||0
+    }));
+  }
+  function computeDevisValues(){
+    const materiaux = readMateriaux(), finitions = readFinitions();
+    const coutMateriaux = materiaux.reduce((s,m)=> s + m.qte*m.prix*(1+m.chute/100), 0);
+    const coutFinitions = finitions.reduce((s,f)=> s + f.prix, 0);
+    const heuresAtelier = val('d-heures-atelier'), heuresPose = val('d-heures-pose');
+    const coutMainOeuvre = (heuresAtelier + heuresPose) * currentRate;
+    const km = val('d-km'), prixKm = val('d-prix-km');
+    const coutDeplacement = km * prixKm;
+    const coutDirect = coutMateriaux + coutFinitions + coutMainOeuvre + coutDeplacement;
+    const fraisPct = val('d-frais-generaux');
+    const fraisGeneraux = coutDirect * fraisPct/100;
+    const coutTotal = coutDirect + fraisGeneraux;
+    const margePct = val('d-marge');
+    const prixVenteHT = coutTotal * (1 + margePct/100);
+    const margeEuro = prixVenteHT - coutTotal;
+    const margeReellePct = prixVenteHT > 0 ? (margeEuro/prixVenteHT*100) : 0;
+    const tvaPct = parseFloat(document.getElementById('d-tva').value);
+    const tvaMontant = prixVenteHT * tvaPct/100;
+    const prixTTC = prixVenteHT + tvaMontant;
+    return {materiaux,finitions,coutMateriaux,coutFinitions,coutMainOeuvre,coutDeplacement,coutDirect,
+      fraisGeneraux,coutTotal,prixVenteHT,margeEuro,margeReellePct,tvaPct,tvaMontant,prixTTC,
+      heuresAtelier,heuresPose,km,prixKm,fraisPct,margePct};
+  }
+  function computeDevis(){
+    const v = computeDevisValues();
+    document.getElementById('devis-breakdown').innerHTML = `
+      <div class="row sub"><span>Matériaux (chute incluse)</span><span>${euro(v.coutMateriaux)}</span></div>
+      <div class="row sub"><span>Finitions / sous-traitance</span><span>${euro(v.coutFinitions)}</span></div>
+      <div class="row sub"><span>Main d'œuvre (${fmt(v.heuresAtelier+v.heuresPose)} h × ${fmt(currentRate)} €)</span><span>${euro(v.coutMainOeuvre)}</span></div>
+      <div class="row sub"><span>Déplacement</span><span>${euro(v.coutDeplacement)}</span></div>
+      <div class="row"><span>Coût direct</span><span>${euro(v.coutDirect)}</span></div>
+      <div class="row sub"><span>Frais généraux (${fmt(v.fraisPct)}%)</span><span>${euro(v.fraisGeneraux)}</span></div>
+      <div class="row"><span>Coût total réel</span><span>${euro(v.coutTotal)}</span></div>
+      <div class="row sub"><span>Marge (${fmt(v.margePct)}% du coût)</span><span>${euro(v.margeEuro)}</span></div>
+      <div class="row total"><span>Prix de vente HT</span><span>${euro(v.prixVenteHT)}</span></div>
+      <div class="row sub"><span>TVA (${v.tvaPct}%)</span><span>${euro(v.tvaMontant)}</span></div>
+      <div class="row ttc"><span>Total TTC</span><span>${euro(v.prixTTC)}</span></div>`;
+    document.getElementById('gauge-value').textContent = fmt(v.margeReellePct) + '%';
+    drawGauge(v.margeReellePct);
+    const warnEl = document.getElementById('devis-warning');
+    if(v.margeReellePct < 15){
+      warnEl.innerHTML = `<div class="status-box">Marge réelle ${fmt(v.margeReellePct)}% — sous 15%, un seul imprévu de chantier fait passer ce devis en perte.</div>`;
+    } else if(v.margeReellePct < 20){
+      warnEl.innerHTML = `<div class="status-box warn">Marge réelle ${fmt(v.margeReellePct)}% — correct mais juste.</div>`;
+    } else {
+      warnEl.innerHTML = `<div class="status-box ok">Marge réelle ${fmt(v.margeReellePct)}% — marge saine.</div>`;
+    }
+    const ecartEl = document.getElementById('devis-ecart');
+    const prixEnvisage = val('d-prix-envisage');
+    if(prixEnvisage > 0){
+      const ecart = v.prixTTC - prixEnvisage;
+      const ecartPct = prixEnvisage>0 ? (ecart/prixEnvisage*100) : 0;
+      ecartEl.innerHTML = ecart > 0
+        ? `<div class="ecart-box">Prix envisagé : <b>${euro(prixEnvisage)}</b> → prix juste calculé : <b>${euro(v.prixTTC)}</b>. Écart : <b>${fmt(ecart)} € (${fmt(ecartPct)}%) en dessous</b> du prix qui couvre coûts + marge.</div>`
+        : `<div class="ecart-box">Prix envisagé : <b>${euro(prixEnvisage)}</b> → prix juste calculé : <b>${euro(v.prixTTC)}</b>. Le prix envisagé couvre déjà le prix juste.</div>`;
+    } else { ecartEl.innerHTML = ''; }
+    return v;
+  }
+  ['d-heures-atelier','d-heures-pose','d-km','d-prix-km','d-frais-generaux','d-marge','d-prix-envisage']
+    .forEach(id => document.getElementById(id).addEventListener('input', computeDevis));
+  document.getElementById('d-tva').addEventListener('change', computeDevis);
+
+  document.getElementById('btn-clear-devis').addEventListener('click', ()=>{
+    document.getElementById('d-client').value=''; document.getElementById('d-projet').value='';
+    document.querySelector('#table-materiaux tbody').innerHTML='';
+    document.querySelector('#table-finitions tbody').innerHTML='';
+    addMateriauRow(); addFinitionRow();
+    ['d-heures-atelier','d-heures-pose','d-km'].forEach(id=>document.getElementById(id).value=0);
+    document.getElementById('d-prix-envisage').value='';
+    computeDevis();
+  });
+
+  // ---------- Chantier (suivi réel / manuel) ----------
+  let editingId = null;
+
+  function computeChantierValues(){
+    const prix = val('c-prix'), materiaux = val('c-materiaux'), autres = val('c-autres');
+    const heures = val('c-heures-atelier') + val('c-heures-pose');
+    const coutMainOeuvre = heures * currentRate;
+    const coutTotal = materiaux + autres + coutMainOeuvre;
+    const marge = prix - coutTotal;
+    const margePct = prix > 0 ? (marge/prix*100) : 0;
+    return {prix, materiaux, autres, heures, coutMainOeuvre, coutTotal, marge, margePct};
+  }
+  function computeChantier(){
+    const v = computeChantierValues();
+    document.getElementById('chantier-breakdown').innerHTML = `
+      <div class="row"><span>Matériaux + sous-traitance</span><span>${euro(v.materiaux)}</span></div>
+      <div class="row"><span>Autres frais</span><span>${euro(v.autres)}</span></div>
+      <div class="row"><span>Main d'œuvre (${fmt(v.heures)} h × ${fmt(currentRate)} €)</span><span>${euro(v.coutMainOeuvre)}</span></div>
+      <div class="row total"><span>Coût réel total</span><span>${euro(v.coutTotal)}</span></div>
+      <div class="row total"><span>Prix facturé</span><span>${euro(v.prix)}</span></div>
+      <div class="row total"><span>Marge</span><span>${euro(v.marge)} (${fmt(v.margePct)}%)</span></div>`;
+    const statusEl = document.getElementById('chantier-status');
+    if(v.prix === 0 && v.coutTotal === 0){ statusEl.innerHTML = ''; }
+    else if(v.marge < 0){
+      statusEl.innerHTML = `<div class="status-box">Chantier à perte : facturé ${fmt(Math.abs(v.margePct))}% en dessous du coût réel.</div>`;
+    } else if(v.margePct < 15){
+      statusEl.innerHTML = `<div class="status-box warn">Marge ${fmt(v.margePct)}% — positive mais trop fine.</div>`;
+    } else {
+      statusEl.innerHTML = `<div class="status-box ok">Marge ${fmt(v.margePct)}% — chantier sain.</div>`;
+    }
+    return v;
+  }
+  ['c-prix','c-materiaux','c-autres','c-heures-atelier','c-heures-pose'].forEach(id=>document.getElementById(id).addEventListener('input', computeChantier));
+
+  function resetChantierForm(){
+    editingId = null;
+    document.getElementById('chantier-editing-banner').innerHTML = '';
+    document.getElementById('c-client').value=''; document.getElementById('c-projet').value='';
+    document.getElementById('c-date').value=todayISO(); document.getElementById('c-statut').value='Brouillon';
+    ['c-prix','c-materiaux','c-autres','c-heures-atelier','c-heures-pose'].forEach(id=>document.getElementById(id).value=0);
+    computeChantier();
+  }
+  document.getElementById('btn-clear-chantier').addEventListener('click', resetChantierForm);
+
+  function loadEntryIntoChantierForm(entry){
+    editingId = entry.id;
+    document.getElementById('chantier-editing-banner').innerHTML =
+      `<div class="editing-banner"><span>Modification de : ${escapeHtml(entry.client)} — ${escapeHtml(entry.projet)}</span><button id="btn-cancel-edit">Annuler / nouveau chantier</button></div>`;
+    document.getElementById('btn-cancel-edit').addEventListener('click', resetChantierForm);
+    document.getElementById('c-client').value = entry.client;
+    document.getElementById('c-projet').value = entry.projet;
+    document.getElementById('c-date').value = entry.date;
+    document.getElementById('c-statut').value = entry.statut;
+    document.getElementById('c-prix').value = entry.prix;
+    document.getElementById('c-materiaux').value = entry.materiaux;
+    document.getElementById('c-autres').value = entry.autres;
+    const heuresTotal = entry.heures || 0;
+    document.getElementById('c-heures-atelier').value = heuresTotal;
+    document.getElementById('c-heures-pose').value = 0;
+    computeChantier();
+    goToTab('chantier');
+  }
+
+  // ---------- History (storage, shared list) ----------
+  let historyCache = [];
+
+  async function loadHistoryData(){
+    try{
+      const res = await window.storage.get('chantiers-list', false);
+      historyCache = (res && res.value) ? JSON.parse(res.value) : [];
+    }catch(e){ historyCache = []; }
+    return historyCache;
+  }
+  async function persistHistory(){
+    try{
+      const res = await window.storage.set('chantiers-list', JSON.stringify(historyCache), false);
+      if(!res) showToast('Échec de la sauvegarde.');
+    }catch(e){ showToast('Erreur de sauvegarde.'); }
+  }
+
+  document.getElementById('btn-save-chantier').addEventListener('click', async ()=>{
+    const client = document.getElementById('c-client').value.trim();
+    const projet = document.getElementById('c-projet').value.trim();
+    if(!client || !projet){ showToast('Renseigne au moins le client et le projet.'); return; }
+    const v = computeChantier();
+    await loadHistoryData();
+    if(editingId){
+      const idx = historyCache.findIndex(d=>d.id===editingId);
+      if(idx >= 0){
+        historyCache[idx] = {
+          ...historyCache[idx], client, projet,
+          date: document.getElementById('c-date').value || todayISO(),
+          statut: document.getElementById('c-statut').value,
+          prix: v.prix, materiaux: v.materiaux, autres: v.autres, heures: v.heures,
+          tauxUtilise: currentRate, coutTotal: v.coutTotal, marge: v.marge, margePct: v.margePct
+        };
+        await persistHistory();
+        showToast('Chantier mis à jour.');
+      }
+    } else {
+      const entry = {
+        id: uid(), client, projet, origin: 'manuel',
+        date: document.getElementById('c-date').value || todayISO(),
+        statut: document.getElementById('c-statut').value,
+        prix: v.prix, materiaux: v.materiaux, autres: v.autres, heures: v.heures,
+        tauxUtilise: currentRate, coutTotal: v.coutTotal, marge: v.marge, margePct: v.margePct
+      };
+      historyCache.unshift(entry);
+      await persistHistory();
+      showToast('Chantier enregistré.');
+    }
+  });
+
+  document.getElementById('btn-save-devis').addEventListener('click', async ()=>{
+    const client = document.getElementById('d-client').value.trim();
+    const projet = document.getElementById('d-projet').value.trim();
+    if(!client || !projet){ showToast('Renseigne au moins le client et le projet.'); return; }
+    const v = computeDevis();
+    const entry = {
+      id: uid(), client, projet, origin: 'devis',
+      date: todayISO(), statut: 'Envoyé',
+      prix: v.prixTTC,
+      materiaux: v.coutMateriaux,
+      autres: v.coutFinitions + v.coutDeplacement + v.fraisGeneraux,
+      heures: v.heuresAtelier + v.heuresPose,
+      tauxUtilise: currentRate,
+      coutTotal: v.coutTotal, marge: v.prixTTC - v.coutTotal,
+      margePct: v.prixTTC > 0 ? ((v.prixTTC - v.coutTotal)/v.prixTTC*100) : 0,
+      detailDevis: { materiauxLines: v.materiaux, finitionsLines: v.finitions, km: v.km, prixKm: v.prixKm, tvaPct: v.tvaPct, prixVenteHT: v.prixVenteHT }
+    };
+    await loadHistoryData();
+    historyCache.unshift(entry);
+    await persistHistory();
+    showToast('Devis enregistré dans le suivi (statut Envoyé).');
+  });
+
+  function renderMensuelVerification(){
+    const now = new Date();
+    const ym = now.toISOString().slice(0,7);
+    const totPaye = historyCache.filter(d=>d.statut==='Payé' && d.date && d.date.startsWith(ym)).reduce((s,d)=>s+(d.prix||0),0);
+    const fraisFixes = val('r-frais-fixes');
+    const margeSecu = val('r-marge-secu')/100;
+    const communal = val('r-communal');
+    const netVise = val('r-net-vise');
+
+    const budget = totPaye*(1-margeSecu);
+    const revenuPro = budget - fraisFixes;
+    const RAnnuel = Math.max(0, revenuPro*12);
+    const { net } = window.__inastiCalc.netFromR(RAnnuel, communal);
+    const netMensuelReel = net/12;
+    const ecart = netMensuelReel - netVise;
+
+    document.getElementById('mensuel-breakdown').innerHTML = `
+      <div class="row"><span>Total facturé payé ce mois (${ym})</span><span>${euro(totPaye)}</span></div>
+      <div class="row sub"><span>Après marge de sécurité (${fmt(margeSecu*100)}%)</span><span>${euro(budget)}</span></div>
+      <div class="row sub"><span>Frais fixes déduits</span><span>-${euro(fraisFixes)}</span></div>
+      <div class="row"><span>Revenu professionnel /mois (avant cotisations/impôt)</span><span>${euro(revenuPro)}</span></div>
+      <div class="row total"><span>Net réel estimé en poche /mois</span><span>${euro(netMensuelReel)}</span></div>
+    `;
+    const statusEl = document.getElementById('mensuel-status');
+    if(totPaye === 0){
+      statusEl.innerHTML = `<div class="status-box warn">Aucun chantier au statut "Payé" ce mois-ci — mets les statuts à jour dans le tableau ci-dessous pour que ce chiffre soit fiable.</div>`;
+    } else if(ecart < 0){
+      statusEl.innerHTML = `<div class="status-box">${euro(Math.abs(ecart))} en dessous du net visé (${euro(netVise)}) ce mois-ci — il ne se paie pas ce qu'il vise, même après avoir été payé par ses clients.</div>`;
+    } else {
+      statusEl.innerHTML = `<div class="status-box ok">Net réel ${euro(netMensuelReel)} — atteint ou dépasse le net visé (${euro(netVise)}).</div>`;
+    }
+  }
+
+  async function renderHistory(){
+    const content = document.getElementById('history-content');
+    content.innerHTML = '<p class="sub">Chargement…</p>';
+    await loadHistoryData();
+    renderMensuelVerification();
+    const kpiRow = document.getElementById('kpi-row');
+
+    if(historyCache.length === 0){
+      kpiRow.innerHTML = '';
+      content.innerHTML = `<div class="empty-state"><div class="big">Aucun chantier enregistré</div>Fais un devis (onglet 2) ou ajoute un chantier (onglet 3) pour le voir apparaître ici.</div>`;
+      return;
+    }
+    const totalFacture = historyCache.reduce((s,d)=>s+(d.prix||0),0);
+    const totalCout = historyCache.reduce((s,d)=>s+(d.coutTotal||0),0);
+    const totalMarge = totalFacture - totalCout;
+    const deficitaires = historyCache.filter(d=>d.marge < 0);
+
+    kpiRow.innerHTML = `
+      <div class="kpi"><div class="k-label">Chantiers suivis</div><div class="k-value">${historyCache.length}</div></div>
+      <div class="kpi"><div class="k-label">Total facturé</div><div class="k-value">${euro(totalFacture)}</div></div>
+      <div class="kpi"><div class="k-label">Coût réel total</div><div class="k-value">${euro(totalCout)}</div></div>
+      <div class="kpi"><div class="k-label">Marge globale</div><div class="k-value ${totalMarge<0?'neg':'pos'}">${euro(totalMarge)}</div></div>
+      <div class="kpi"><div class="k-label">Chantiers à perte</div><div class="k-value ${deficitaires.length>0?'neg':''}">${deficitaires.length}</div></div>`;
+
+    let rows = historyCache.map(d => `
+      <tr data-id="${d.id}" class="${d.marge<0?'deficit':''}">
+        <td>${d.date}</td>
+        <td>${escapeHtml(d.client)}</td>
+        <td>${escapeHtml(d.projet)} <span class="badge-origin">${d.origin==='devis'?'Devis':'Manuel'}</span></td>
+        <td class="montant">${euro(d.prix)}</td>
+        <td class="montant">${euro(d.coutTotal)}</td>
+        <td class="montant ${d.marge<0?'neg':'pos'}">${euro(d.marge)} (${fmt(d.margePct)}%)</td>
+        <td><select class="statut">${['Brouillon','Envoyé','Accepté','Refusé','Facturé','Payé'].map(s=>`<option value="${s}" ${s===d.statut?'selected':''}>${s}</option>`).join('')}</select></td>
+        <td class="actions-cell"><button class="edit">Éditer</button><button class="del">Supprimer</button></td>
+      </tr>`).join('');
+
+    content.innerHTML = `<table class="hist"><thead><tr><th>Date</th><th>Client</th><th>Projet</th><th>Facturé</th><th>Coût réel</th><th>Marge</th><th>Statut</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+
+    content.querySelectorAll('tr[data-id]').forEach(tr=>{
+      const id = tr.dataset.id;
+      tr.querySelector('.statut').addEventListener('change', async (e)=>{
+        const item = historyCache.find(d=>d.id===id);
+        if(item){ item.statut = e.target.value; await persistHistory(); showToast('Statut mis à jour.'); renderHistory(); }
+      });
+      tr.querySelector('.edit').addEventListener('click', ()=>{
+        const item = historyCache.find(d=>d.id===id);
+        if(item) loadEntryIntoChantierForm(item);
+      });
+      tr.querySelector('.del').addEventListener('click', async ()=>{
+        if(confirm('Supprimer ce chantier du suivi ?')){
+          historyCache = historyCache.filter(d=>d.id!==id);
+          await persistHistory();
+          renderHistory();
+        }
+      });
+    });
+  }
+
+  // ---------- Init ----------
+  addMateriauRow({desig:'Tube acier 40x40x2mm', qte:24, unite:'m', prix:8, chute:10});
+  addMateriauRow({desig:'Tôle décorative acier 3mm', qte:5.4, unite:'m²', prix:45, chute:15});
+  addMateriauRow({desig:'Charnières, gâche, accessoires', qte:1, unite:'forfait', prix:180, chute:0});
+  addFinitionRow({desig:'Thermolaquage RAL 7016', prix:350});
+  document.getElementById('c-date').value = todayISO();
+  loadRate().then(()=>{ computeDevis(); computeChantier(); });
+  drawGauge(0);
+
+})();
+</script>
+</body>
+</html>
